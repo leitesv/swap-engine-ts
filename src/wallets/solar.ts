@@ -319,7 +319,7 @@ export default class Solar {
     return new Promise((resolve, reject) => {
       (async () => {
         try {
-          //SolarManagers.configManager.setFromPreset("mainnet");
+          SolarManagers.configManager.setFromPreset("mainnet");
           SolarManagers.configManager.setHeight(0);
 
           var validaddress = SolarIdentities.Address.validate(address);
