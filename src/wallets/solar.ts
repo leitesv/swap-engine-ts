@@ -420,7 +420,7 @@ export default class Solar {
           } else {
             newnonce = nonceOverride;
           }
-
+          SolarManagers.configManager.setFromPreset("mainnet");
           SolarManagers.configManager.setHeight(0);
 
           logger.verbose(`Nonce is ${newnonce}`);
