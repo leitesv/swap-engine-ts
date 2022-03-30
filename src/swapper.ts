@@ -138,12 +138,12 @@ async function _checkNewTransactions(blockchain: string) {
             transactionId: transaction.txid,
             quantity: transaction.details[0].amount,
             confirmations: transaction.confirmations,
-            isConfirmed: transaction.confirmations > 10 ? true : false,
+            isConfirmed: transaction.confirmations > 35 ? true : false,
             isSwapped: false,
             isError: isError,
             errorReason: errorReason,
             swapAddress: swapToAddress,
-            confirmedAt: transaction.confirmations > 10 ? currentTimestamp : 0,
+            confirmedAt: transaction.confirmations > 35 ? currentTimestamp : 0,
             swappedAt: 0,
             swapTransactionId: ""
           };
