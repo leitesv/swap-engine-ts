@@ -5,13 +5,9 @@ import {
   Identities as SolarIdentities,
   Identities,
 } from "@solar-network/crypto";
-import {Transactions} from '@arkecosystem/crypto';
-import { BN } from "ethereumjs-util";
 import Big from "big.js";
 import { generateMnemonic } from "bip39";
 import got from "got";
-import { BigNumber } from "@arkecosystem/utils";
-import { ITransaction, ITransactionData } from "@solar-network/crypto/dist/interfaces";
 import SimpleLogger from "../utils/logger";
 
 const logger = new SimpleLogger({
@@ -130,7 +126,7 @@ export default class Solar {
     return new Promise((resolve, reject) => {
       (async () => {
         try {
-          //SolarManagers.configManager.setFromPreset("mainnet");
+          SolarManagers.configManager.setFromPreset("mainnet");
           SolarManagers.configManager.setHeight(0);
 
           let blockinfo: any = await got(
@@ -160,7 +156,7 @@ export default class Solar {
     return new Promise((resolve, reject) => {
       (async () => {
         try {
-          //SolarManagers.configManager.setFromPreset("mainnet");
+          SolarManagers.configManager.setFromPreset("mainnet");
           SolarManagers.configManager.setHeight(0);
 
           let txinfo: any = await got(
@@ -293,7 +289,7 @@ export default class Solar {
     return new Promise((resolve, reject) => {
       (async () => {
         try {
-          //SolarManagers.configManager.setFromPreset("mainnet");
+          SolarManagers.configManager.setFromPreset("mainnet");
           SolarManagers.configManager.setHeight(0);
 
           var mnemonic = generateMnemonic();
