@@ -301,7 +301,7 @@ async function swapConfirmedTransactions() {
 
               lastSend = Date.now();
 
-              await sleep(1);
+              await sleep(8);
             } catch (e) {
               logger.error(`There was an error while trying to swap the transaction ${thisSwap.transactionId} 🤦‍♂️`);
               logger.error(e);
