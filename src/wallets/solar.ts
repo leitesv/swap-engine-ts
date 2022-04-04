@@ -465,9 +465,11 @@ export default class Solar {
             if (sendTx.data && sendTx.data.error) {
               reject(sendTx.data.error);
               logger.error("There was an error sending a transaction to the Solar blockchain.");
+              logger.error(sendTx.data.error);
               reject("Unknown Error");
             } else {
               logger.error("There was an unknown error sending a transaction to the Solar blockchain.");
+              logger.error(sendTx);
               reject("Unknown Error");
             }
           }
