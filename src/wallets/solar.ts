@@ -387,7 +387,7 @@ export default class Solar {
             .times(10 ** 8)
             .toFixed(0);
 
-          let feeEstimate = 0.05;
+          let feeEstimate = 0.08;
 
           try {
             feeEstimate = (await this.getFeeEstimate()) as number;
