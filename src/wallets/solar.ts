@@ -389,11 +389,11 @@ export default class Solar {
 
           let feeEstimate = 0.05;
 
-          try {
-            feeEstimate = (await this.getFeeEstimate()) as number;
-          } catch (e) {
-            logger.warn("Couldn't get fee estimate. Using default 😥");
-          }
+          // try {
+          //   feeEstimate = (await this.getFeeEstimate()) as number;
+          // } catch (e) {
+          //   logger.warn("Couldn't get fee estimate. Using default 😥");
+          // }
 
           let qfeeEstimate = Big(feeEstimate)
             .times(10 ** 8)
