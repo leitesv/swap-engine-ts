@@ -387,7 +387,7 @@ export default class Solar {
             .times(10 ** 8)
             .toFixed(0);
 
-          let feeEstimate = 0.08;
+          let feeEstimate = 0.05;
 
           try {
             feeEstimate = (await this.getFeeEstimate()) as number;
@@ -451,7 +451,7 @@ export default class Solar {
               body: JSON.stringify({ transactions: [transaction] }),
             })
             .json();
-
+          logger.verbose(JSON.stringify(transaction));
           if (sendTx.data && sendTx.data.accept.length > 0) {
             resolve(sendTx.data.accept[0]);
             logger.notice(`Transaction successfully sent 🙌`);
