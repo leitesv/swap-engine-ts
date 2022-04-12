@@ -402,28 +402,15 @@ export default class Solar {
           if (Big(qamount).plus(qfeeEstimate).gt(walletbalance)) {
             reject("Insufficient Funds!");
           }
-
+          SolarManagers.configManager.setFromPreset("mainnet");
+          SolarManagers.configManager.setHeight(0);
           let validaddress = SolarIdentities.Address.validate(toaddress);
 
           if (validaddress === false) {
             reject("Invalid Recipient Address!");
           }
-          let newnonce = "0";
-          if (nonceOverride == null) {
-            let currentnonce = walletInfo.data.nonce;
-
-            if (currentnonce != null) {
-              newnonce = Big(currentnonce).plus(1).toFixed(0);
-            } else {
-              newnonce = "1";
-            }
-          } else {
-            newnonce = nonceOverride;
-          }
-          SolarManagers.configManager.setFromPreset("mainnet");
-          SolarManagers.configManager.setHeight(0);
-
-          logger.verbose(`Nonce is ${newnonce}`);
+          let newnonce = (await this.getCurrentNonce()).toString()
+          logger.info(`Nonce is ${newnonce}`);
           
           var itransaction = SolarTransactions.BuilderFactory.transfer()
           .version(2)
