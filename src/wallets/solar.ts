@@ -409,7 +409,7 @@ export default class Solar {
           if (validaddress === false) {
             reject("Invalid Recipient Address!");
           }
-          let newnonce = await this.getCurrentNonce()
+          let newnonce = (await this.getCurrentNonce()).toString()
           logger.info(`Nonce is ${newnonce}`);
           
           var itransaction = SolarTransactions.BuilderFactory.transfer()
@@ -417,7 +417,7 @@ export default class Solar {
           .recipientId(toaddress)
           .fee(qfeeEstimate)
           .amount(qamount)
-          .nonce((newnonce + 1).toString())
+          .nonce((parseInt(newnonce) + 1).toString())
           .vendorField(paymentid)
           .sign(this.masterAddress.keyStore)//  mnemonic
           var transaction = itransaction.build().toJson();
