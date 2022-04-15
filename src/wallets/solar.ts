@@ -8,6 +8,7 @@ import {
 import Big from "big.js";
 import { generateMnemonic } from "bip39";
 import got from "got";
+import sleep from "sleep-promise";
 import SimpleLogger from "../utils/logger";
 
 const logger = new SimpleLogger({
@@ -449,14 +450,38 @@ export default class Solar {
             resolve(sendTx3.data.accept[0]);
             logger.notice(`Transaction successfully sent 🙌`);
           } else {
-            if (sendTx.data && sendTx.data.error) {
-              reject(sendTx.data.error);
+            if (sendTx.data && sendTx.data.errors) {
+              reject(sendTx.data.errors);
               logger.error("There was an error sending a transaction to the Solar blockchain.");
-              logger.error(sendTx.data.error.toString());
-              reject("Unknown Error");
+              logger.error(JSON.stringify(sendTx.data.errors));
+              logger.warn("Will retry tx...");
+              sleep(1)
+              var itransaction = SolarTransactions.BuilderFactory.transfer()
+              .version(2)
+              .recipientId(toaddress)
+              .fee(qfeeEstimate)
+              .amount(qamount)
+              .nonce((parseInt(newnonce) + 2).toString())
+              .vendorField(paymentid)
+              .sign(this.masterAddress.keyStore)//  mnemonic
+              var transaction = itransaction.build().toJson();
+    
+              var retryTx: any = await got
+                .post(this.apiURL + "/transactions", {
+                  body: JSON.stringify({ transactions: [transaction] }),
+                })
+                .json();
+                if (retryTx.data && retryTx.data.accept.length > 0) {
+                  resolve(sendTx.data.accept[0]);
+                  logger.notice(`Transaction successfully sent 🙌`);
+                } else {
+                  logger.error(`Error while trying to send tx ${paymentid} again.`)
+                  reject("Unknown Error");
+                }
+              
             } else {
               logger.error("There was an unknown error sending a transaction to the Solar blockchain.");
-              logger.error(sendTx.toString());
+              logger.error(JSON.stringify(sendTx));
               reject("Unknown Error");
             }
           }

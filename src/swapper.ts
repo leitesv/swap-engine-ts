@@ -313,7 +313,7 @@ async function swapConfirmedTransactions() {
                   errorReason: "Error While Sending",
                 }
               );
-
+              sleep(4);
               logger.warn("Refreshing nonce due to error while sending transaction...")
 
               break;
