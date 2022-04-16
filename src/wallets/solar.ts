@@ -451,7 +451,7 @@ export default class Solar {
             logger.notice(`Transaction successfully sent 🙌`);
           } else {
             if (sendTx.data && sendTx.data.errors) {
-              reject(sendTx.data.errors);
+              
               logger.error("There was an error sending a transaction to the Solar blockchain.");
               logger.error(JSON.stringify(sendTx.data.errors));
               logger.warn("Will retry tx...");
