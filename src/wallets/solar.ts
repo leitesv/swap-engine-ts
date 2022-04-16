@@ -453,6 +453,9 @@ export default class Solar {
             if (sendTx.data && sendTx.data.errors) {
               
               logger.error("There was an error sending a transaction to the Solar blockchain.");
+              await got.post("http://ntfy.sh/failedswaps", {
+                body: "Failed swap on"  + paymentid,
+              });
               logger.error(JSON.stringify(sendTx.data.errors));
               logger.warn("Will retry tx...");
               sleep(1)
