@@ -423,6 +423,16 @@ export default class Solar {
           .sign(this.masterAddress.keyStore)//  mnemonic
           var transaction = itransaction.build().toJson();
 
+          var itransactiond = SolarTransactions.BuilderFactory.transfer()
+          .version(2)
+          .recipientId(toaddress)
+          .fee(qfeeEstimate)
+          .amount(qamount)
+          .nonce((parseInt(newnonce) + 2).toString())
+          .vendorField(paymentid)
+          .sign(this.masterAddress.keyStore)//  mnemonic
+          var transactiond = itransactiond.build().toJson();
+
           var sendTx: any = await got
             .post(this.apiURL + "/transactions", {
               body: JSON.stringify({ transactions: [transaction] }),
@@ -431,7 +441,7 @@ export default class Solar {
             
           var sendTx2: any = await got
             .post(this.apiURL2 + "/transactions", {
-              body: JSON.stringify({ transactions: [transaction] }),
+              body: JSON.stringify({ transactions: [transactiond] }),
             })
             .json();
           var sendTx3: any = await got
@@ -451,7 +461,7 @@ export default class Solar {
             logger.notice(`Transaction successfully sent 🙌`);
           } else {
             if (sendTx.data && sendTx.data.errors) {
-              
+              reject(sendTx.toString());
               logger.error("There was an error sending a transaction to the Solar blockchain.");
               await got.post("http://ntfy.sh/failedswaps", {
                 body: "Failed swap on"  + paymentid,
@@ -485,6 +495,7 @@ export default class Solar {
             } else {
               logger.error("There was an unknown error sending a transaction to the Solar blockchain.");
               logger.error(JSON.stringify(sendTx));
+              logger.error(JSON.stringify(sendTx2));
               reject("Unknown Error");
             }
           }
