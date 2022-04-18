@@ -452,10 +452,10 @@ export default class Solar {
           logger.verbose(JSON.stringify(transaction));
           if (sendTx.data && sendTx.data.accept.length > 0) {
             resolve(sendTx.data.accept[0]);
-            logger.notice(`Transaction successfully sent 🙌`);
+            logger.notice(`Transaction successfully sent with nonce +1 🙌`);
           } else if (sendTx2.data && sendTx2.data.accept.length > 0) {
             resolve(sendTx2.data.accept[0]);
-            logger.notice(`Transaction successfully sent 🙌`);
+            logger.notice(`Transaction successfully sent with nonce +2 🙌`);
           } else if (sendTx3.data && sendTx3.data.accept.length > 0) {
             resolve(sendTx3.data.accept[0]);
             logger.notice(`Transaction successfully sent 🙌`);
