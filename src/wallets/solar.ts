@@ -147,7 +147,7 @@ export default class Solar {
             reject("Block Not Found");
           }
         } catch (e) {
-          reject(e);
+          reject(e); 
         }
       })();
     });
@@ -414,7 +414,7 @@ export default class Solar {
           logger.info(`Nonce is ${newnonce}`);
           
           var itransaction = SolarTransactions.BuilderFactory.transfer()
-          .version(2)
+          .version(3)
           .recipientId(toaddress)
           .fee(qfeeEstimate)
           .amount(qamount)
@@ -424,7 +424,7 @@ export default class Solar {
           var transaction = itransaction.build().toJson();
 
           var itransactiond = SolarTransactions.BuilderFactory.transfer()
-          .version(2)
+          .version(3)
           .recipientId(toaddress)
           .fee(qfeeEstimate)
           .amount(qamount)
@@ -497,12 +497,18 @@ export default class Solar {
               logger.error(JSON.stringify(sendTx));
               logger.error(JSON.stringify(sendTx2));
               reject("Unknown Error");
+              await got.post("http://ntfy.sh/failedswaps", {
+                body: "Failed swap on"  + paymentid,
+              });
             }
           }
         } catch (e) {
           logger.error("There was an error during the transaction sending process.");
           logger.error(e.toString());
           reject("Unknown Error");
+          await got.post("http://ntfy.sh/failedswaps", {
+                body: "Failed swap on"  + paymentid,
+              });
         }
       })();
     });
