@@ -448,12 +448,12 @@ export default class Solar {
             resolve(sendTx.data.accept[0]);
             logger.notice(`Transaction successfully sent with nonce +1 🙌`);
           } else {
+            var sendTx2: any = await got
+            .post(this.apiURL2 + "/transactions", {
+              body: JSON.stringify({ transactions: [transactiond] }),
+            })
+            .json();
             if (sendTx2.data && sendTx2.data.accept.length > 0) {
-              var sendTx2: any = await got
-              .post(this.apiURL2 + "/transactions", {
-                body: JSON.stringify({ transactions: [transactiond] }),
-              })
-              .json();
               resolve(sendTx2.data.accept[0]);
               logger.notice(`Transaction successfully sent with nonce +2 🙌`);
             } else {
