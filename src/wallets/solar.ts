@@ -1,3 +1,4 @@
+import { TransferBuilder } from "@arkecosystem/crypto/dist/transactions/builders/transactions/transfer";
 import {
   Transactions as SolarTransactions,
   Managers as SolarManagers,
@@ -5,6 +6,7 @@ import {
   Identities as SolarIdentities,
   Identities,
 } from "@solar-network/crypto";
+import { LegacyTransferBuilder } from "@solar-network/crypto/dist/transactions/builders/transactions/core/legacy-transfer";
 import Big from "big.js";
 import { generateMnemonic } from "bip39";
 import got from "got";
@@ -412,6 +414,7 @@ export default class Solar {
           }
           let newnonce = (await this.getCurrentNonce()).toString()
           logger.info(`Nonce is ${newnonce}`);
+          let pp = SolarTransactions.BuilderFactory.transfer()
           
           var itransaction = SolarTransactions.BuilderFactory.transfer()
           .version(3)
@@ -440,68 +443,71 @@ export default class Solar {
             })
             .json();
             
-          var sendTx2: any = await got
-            .post(this.apiURL2 + "/transactions", {
-              body: JSON.stringify({ transactions: [transactiond] }),
-            })
-            .json();
-          var sendTx3: any = await got
-            .post(this.apiURL3 + "/transactions", {
-              body: JSON.stringify({ transactions: [transaction] }),
-            })
-            .json();
           logger.verbose(JSON.stringify(transaction));
           if (sendTx.data && sendTx.data.accept.length > 0) {
             resolve(sendTx.data.accept[0]);
             logger.notice(`Transaction successfully sent with nonce +1 🙌`);
-          } else if (sendTx2.data && sendTx2.data.accept.length > 0) {
-            resolve(sendTx2.data.accept[0]);
-            logger.notice(`Transaction successfully sent with nonce +2 🙌`);
-          } else if (sendTx3.data && sendTx3.data.accept.length > 0) {
-            resolve(sendTx3.data.accept[0]);
-            logger.notice(`Transaction successfully sent 🙌`);
           } else {
-            if (sendTx.data && sendTx.data.errors) {
-              reject(sendTx.toString());
-              logger.error("There was an error sending a transaction to the Solar blockchain.");
-              await got.post("http://ntfy.sh/failedswaps", {
-                body: "Failed swap on"  + paymentid,
-              });
-              logger.error(JSON.stringify(sendTx.data.errors));
-              logger.warn("Will retry tx...");
-              sleep(1)
-              var itransaction = SolarTransactions.BuilderFactory.transfer()
-              .version(2)
-              .recipientId(toaddress)
-              .fee(qfeeEstimate)
-              .amount(qamount)
-              .nonce((parseInt(newnonce) + 2).toString())
-              .vendorField(paymentid)
-              .sign(this.masterAddress.keyStore)//  mnemonic
-              var transaction = itransaction.build().toJson();
-    
-              var retryTx: any = await got
-                .post(this.apiURL + "/transactions", {
-                  body: JSON.stringify({ transactions: [transaction] }),
-                })
-                .json();
-                if (retryTx.data && retryTx.data.accept.length > 0) {
-                  resolve(sendTx.data.accept[0]);
-                  logger.notice(`Transaction successfully sent 🙌`);
-                } else {
-                  logger.error(`Error while trying to send tx ${paymentid} again.`)
-                  reject("Unknown Error");
-                }
-              
+            if (sendTx2.data && sendTx2.data.accept.length > 0) {
+              var sendTx2: any = await got
+              .post(this.apiURL2 + "/transactions", {
+                body: JSON.stringify({ transactions: [transactiond] }),
+              })
+              .json();
+              resolve(sendTx2.data.accept[0]);
+              logger.notice(`Transaction successfully sent with nonce +2 🙌`);
             } else {
-              logger.error("There was an unknown error sending a transaction to the Solar blockchain.");
-              logger.error(JSON.stringify(sendTx));
-              logger.error(JSON.stringify(sendTx2));
-              reject("Unknown Error");
-              await got.post("http://ntfy.sh/failedswaps", {
-                body: "Failed swap on"  + paymentid,
-              });
+              var sendTx3: any = await got
+              .post(this.apiURL3 + "/transactions", {
+                body: JSON.stringify({ transactions: [transaction] }),
+              })
+              .json();
+              if (sendTx3.data && sendTx3.data.accept.length > 0) {
+                resolve(sendTx3.data.accept[0]);
+                logger.notice(`Transaction successfully sent 🙌`);
+              } else {
+                if (sendTx3.data && sendTx3.data.errors) {
+                  reject(sendTx.toString());
+                  logger.error("There was an error sending a transaction to the Solar blockchain.");
+                  await got.post("http://ntfy.sh/failedswaps", {
+                    body: "Failed swap on"  + paymentid,
+                  });
+                  logger.error(JSON.stringify(sendTx.data.errors));
+                  logger.warn("Will retry tx...");
+                  sleep(1)
+                  var itransaction = SolarTransactions.BuilderFactory.transfer()
+                  .version(2)
+                  .recipientId(toaddress)
+                  .fee(qfeeEstimate)
+                  .amount(qamount)
+                  .nonce((parseInt(newnonce) + 2).toString())
+                  .vendorField(paymentid)
+                  .sign(this.masterAddress.keyStore)//  mnemonic
+                  var transaction = itransaction.build().toJson();
+        
+                  var retryTx: any = await got
+                    .post(this.apiURL + "/transactions", {
+                      body: JSON.stringify({ transactions: [transaction] }),
+                    })
+                    .json();
+                    if (retryTx.data && retryTx.data.accept.length > 0) {
+                      resolve(sendTx.data.accept[0]);
+                      logger.notice(`Transaction successfully sent after retry 🙌`);
+                    } else {
+                      logger.error(`Error while trying to send tx ${paymentid} again.`)
+                      reject("Unknown Error");
+                    }
+                  
+                } else {
+                  logger.error("There was an unknown error sending a transaction to the Solar blockchain.");
+                  reject("Unknown Error");
+                  await got.post("http://ntfy.sh/failedswaps", {
+                    body: "Failed swap on"  + paymentid,
+                  });
+                }
+              }
             }
+
           }
         } catch (e) {
           logger.error("There was an error during the transaction sending process.");
